@@ -22,10 +22,8 @@ internal class McpServer(private val port: Int) {
         embeddedServer(Netty, port) {
             install(SSE)
             routing {
-                route("/mcp") {
-                    mcp {
-                        buildMcpServer()
-                    }
+                mcp {
+                    buildMcpServer()
                 }
             }
         }.start(wait = false)
