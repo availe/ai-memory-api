@@ -20,7 +20,10 @@ internal class FileController {
         val formLens = Body.multipartForm(Validator.Strict, documentPart, ownerPart).toLens()
 
         return ApiRoutes.FILE meta {
-            summary = "Upload a file to the server"
+            summary = "Upload a file to the server."
+            receiving(formLens)
+            returning(Status.CREATED to "The file was uploaded successfully.")
+            returning(Status.BAD_REQUEST to "Invalid multipart form data was provided.")
         } bindContract Method.POST to { request ->
             val form = formLens(request)
 

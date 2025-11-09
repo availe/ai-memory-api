@@ -3,6 +3,7 @@ package io.availe
 import org.http4k.contract.contract
 import org.http4k.contract.openapi.ApiInfo
 import org.http4k.contract.openapi.v3.OpenApi3
+import org.http4k.contract.ui.redoc.redocWebjar
 import org.http4k.format.Jackson
 import org.http4k.routing.bind
 import org.http4k.routing.routes
@@ -16,7 +17,12 @@ val contract = contract {
 }
 
 val app = routes(
-    "/api" bind contract
+    "/api" bind contract,
+    "/docs" bind redocWebjar {
+        url = "/api/openapi.json"
+        pageTitle = "availe API – Redoc"
+        options["disable-search"] = "false"
+    }
 )
 
 internal fun main() {

@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.http4k.api.openapi)
     implementation(libs.http4k.format.jackson)
     implementation(libs.http4k.multipart)
+    implementation("org.http4k:http4k-api-ui-redoc")
 }
 
 tasks.test {
