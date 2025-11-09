@@ -32,4 +32,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-include(":server")
+include(":backend:server")
+include(":backend:infrastructure")
+include(":backend:shared")
