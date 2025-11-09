@@ -1,15 +1,12 @@
 package io.availe.http4k
 
-import org.http4k.client.OkHttp
+import org.http4k.client.JavaHttpClient
 import org.http4k.contract.contract
 import org.http4k.contract.openapi.ApiInfo
 import org.http4k.contract.openapi.v3.OpenApi3
 import org.http4k.contract.ui.redocLite
-import org.http4k.core.HttpHandler
-import org.http4k.core.Method
-import org.http4k.core.Response
+import org.http4k.core.*
 import org.http4k.core.Status.Companion.OK
-import org.http4k.core.Uri
 import org.http4k.format.Jackson
 import org.http4k.routing.bind
 import org.http4k.routing.routes
@@ -35,18 +32,31 @@ internal class Http4kServer(private val port: Int, private val mcpPort: Int) {
 
 
     private fun mcpProxy(mcpPort: Int): HttpHandler {
-        val client = OkHttp()
+        val client = JavaHttpClient(responseBodyMode = BodyMode.Stream)
+
         return { req ->
-            val target = Uri.of("http://localhost:$mcpPort${req.uri.path}")
+            val targetPath = req.uri.path.removePrefix("/mcp").ifEmpty { "/" }
+            val target = Uri.of("http://localhost:$mcpPort$targetPath")
                 .query(req.uri.query)
-            client(req.uri(target))
+
+            val streamingRequest = req
+                .uri(target)
+                .removeHeader("Accept-Encoding")
+                .removeHeader("Host")
+
+            val response = client(streamingRequest)
+            response
         }
     }
 
     private val app = routes(
         "/health" bind Method.GET to { Response(OK).body("ok") },
         "/api" bind contract,
-        "/mcp/{rest:.*}" bind mcpProxy(mcpPort),
+        "/mcp" bind routes(
+            "/{rest:.*}" bind mcpProxy(mcpPort),
+            "/" bind mcpProxy(mcpPort),
+            "" bind mcpProxy(mcpPort)
+        ),
         redoc
     )
 }
