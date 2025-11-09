@@ -14,8 +14,8 @@ dependencies {
     implementation(libs.http4k.core)
     implementation(libs.http4k.server.helidon)
     implementation(libs.http4k.api.openapi)
-
-    testImplementation(libs.kotlin.test)
+    implementation(libs.http4k.format.jackson)
+    implementation(libs.http4k.multipart)
 }
 
 tasks.test {

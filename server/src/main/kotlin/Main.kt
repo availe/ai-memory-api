@@ -1,3 +1,5 @@
 package io.availe
 
-fun main() {}
+internal fun main() {
+
+}

@@ -7,6 +7,8 @@ http4k-api-openapi = { module = "org.http4k:http4k-api-openapi" }
 http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4kBom" }
 http4k-core = { module = "org.http4k:http4k-core" }
 http4k-server-helidon = { module = "org.http4k:http4k-server-helidon" }
+http4k-format-jackson = { module = "org.http4k:http4k-format-jackson" }
+http4k-multipart = { module = "org.http4k:http4k-multipart" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 
 [plugins]
