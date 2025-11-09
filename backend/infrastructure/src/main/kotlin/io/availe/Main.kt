@@ -1,5 +1,6 @@
 package io.availe
 
+import com.github.dockerjava.api.DockerClient
 import io.availe.orchestration.containers.ContainerOrchestrator
 import io.availe.orchestration.containers.core.*
 import io.availe.orchestration.keycloak.keycloakRunSpec
@@ -10,13 +11,12 @@ import io.availe.provisioning.PostgresProvisioner
 import io.availe.provisioning.keycloak.KeycloakProvisioner
 import io.availe.provisioning.keycloak.reconcilers.ClientsReconciler
 import io.availe.provisioning.keycloak.reconcilers.RealmSettingsReconciler
-import com.github.dockerjava.api.DockerClient
 import org.slf4j.LoggerFactory
 import kotlin.system.exitProcess
 
 internal fun main(args: Array<String>) {
     val logger = LoggerFactory.getLogger("io.availe.Main")
-    val dockerNetworkName = "availe-network"
+    val dockerNetworkName = "ai-memory-api-network"
     val dockerClient: DockerClient = DockerClientProvider().createDockerClient()
     var exitCode = 0
 
