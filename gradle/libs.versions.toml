@@ -1,15 +1,29 @@
 [versions]
 kotlin = "2.3.0-Beta2"
 http4kBom = "6.20.1.0"
+mcp = "0.7.6"
+ktor = "3.3.2"
+kotlinxSerialization = "1.9.0"
+xemanticMdc = "0.1.1"
 
 [libraries]
 http4k-api-openapi = { module = "org.http4k:http4k-api-openapi" }
 http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4kBom" }
 http4k-core = { module = "org.http4k:http4k-core" }
 http4k-server-helidon = { module = "org.http4k:http4k-server-helidon" }
+http4k-client-okhttp = { module = "org.http4k:http4k-client-okhttp" }
 http4k-format-jackson = { module = "org.http4k:http4k-format-jackson" }
 http4k-multipart = { module = "org.http4k:http4k-multipart" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+modelcontextprotocol-kotlin-sdk = { module = "io.modelcontextprotocol:kotlin-sdk", version.ref = "mcp" }
+ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core" }
+ktor-client-java = { module = "io.ktor:ktor-client-java" }
+ktor-server-core = { module = "io.ktor:ktor-server-core" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+xemantic-ai-tool-schema-mdc = { module = "com.xemantic.ai:xemantic-ai-tool-schema-mdc", version.ref = "xemanticMdc" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
