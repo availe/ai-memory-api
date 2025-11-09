@@ -11,7 +11,9 @@ import org.http4k.lens.Validator
 import org.http4k.lens.multipartForm
 
 internal class FileController {
-    fun uploadFile(): ContractRoute {
+    val routes = listOf(uploadFile())
+
+    private fun uploadFile(): ContractRoute {
         val documentPart = MultipartFormFile.required("document")
         val ownerPart = MultipartFormFile.required("owner")
 
