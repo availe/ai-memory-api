@@ -16,13 +16,15 @@ val contract = contract {
     routes += FileController().routes
 }
 
+val redoc = redocLite {
+    url = "/api/openapi.json"
+    pageTitle = "availe API – Redoc"
+    options["disable-search"] = "false"
+}
+
 val app = routes(
     "/api" bind contract,
-    "/docs" bind redocLite {
-        url = "/api/openapi.json"
-        pageTitle = "availe API – Redoc"
-        options["disable-search"] = "false"
-    }
+    redoc
 )
 
 internal fun main() {
