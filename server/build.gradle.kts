@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.3.0-Beta2"
+    alias(libs.plugins.kotlinJvm)
 }
 
 group = "io.availe"
@@ -10,7 +10,12 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    implementation(platform(libs.http4k.bom))
+    implementation(libs.http4k.core)
+    implementation(libs.http4k.server.helidon)
+    implementation(libs.http4k.api.openapi)
+
+    testImplementation(libs.kotlin.test)
 }
 
 tasks.test {

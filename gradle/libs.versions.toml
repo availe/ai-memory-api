@@ -1,0 +1,13 @@
+[versions]
+kotlin = "2.3.0-Beta2"
+http4kBom = "6.20.1.0"
+
+[libraries]
+http4k-api-openapi = { module = "org.http4k:http4k-api-openapi" }
+http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4kBom" }
+http4k-core = { module = "org.http4k:http4k-core" }
+http4k-server-helidon = { module = "org.http4k:http4k-server-helidon" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
