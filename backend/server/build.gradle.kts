@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.postgresql)
     implementation(libs.flyway.database.postgresql)
     implementation(libs.pgvector)
+    implementation(libs.pdfbox)
 }
 
 jooq {

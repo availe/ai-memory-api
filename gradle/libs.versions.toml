@@ -13,6 +13,7 @@ jooq = "3.20.8"
 flyway = "11.16.0"
 hikari = "7.0.2"
 pgvector = "0.1.6"
+pdfbox = "3.0.3"
 
 [libraries]
 modelcontextprotocol-kotlin-sdk = { module = "io.modelcontextprotocol:kotlin-sdk", version.ref = "mcp" }
@@ -37,6 +38,7 @@ flyway-database-postgresql = { group = "org.flywaydb", name = "flyway-database-p
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 hikariCP = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 pgvector = { module = "com.pgvector:pgvector", version.ref = "pgvector" }
+pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
