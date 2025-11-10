@@ -1,9 +1,11 @@
 import {type ChangeEvent, type FormEvent, useState} from "react";
 import {Button} from "@/components/ui/button.tsx";
 import {Input} from "@/components/ui/input.tsx";
+import {ingestFile} from "@/lib/api.ts";
 
 export function UploadFilesContent() {
     const [files, setFiles] = useState<File[]>([])
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const fileList = event.currentTarget.files ?? []
@@ -20,15 +22,26 @@ export function UploadFilesContent() {
 
     const handleRemoveAllFiles = () => setFiles([])
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (files.length === 0) {
             alert("Please select at least one file to upload.")
             return
         }
-        const formData = new FormData()
-        files.forEach((file) => formData.append("files", file))
-        console.log("Submitting files:", files.map((file) => file.name))
+
+        try {
+            setIsSubmitting(true);
+            for (const file of files) {
+                await ingestFile(file);
+            }
+            alert(`Successfully ingested ${files.length} file(s).`);
+            setFiles([]);
+        } catch (error) {
+            console.error("File ingestion failed:", error);
+            alert("Failed to ingest some files. Check console for details.");
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -39,6 +52,7 @@ export function UploadFilesContent() {
                 accept={ACCEPTED_FILE_TYPES.join(",")}
                 onChange={handleFileChange}
                 className="cursor-pointer"
+                disabled={isSubmitting}
             />
 
             {files.length > 0 && (
@@ -52,6 +66,7 @@ export function UploadFilesContent() {
                                 size="sm"
                                 onClick={() => handleRemoveFile(file)}
                                 className="text-red-500 hover:text-red-700"
+                                disabled={isSubmitting}
                             >
                                 ✕
                             </Button>
@@ -61,11 +76,12 @@ export function UploadFilesContent() {
             )}
 
             <div className="mt-auto flex gap-2 self-end">
-                <Button type="button" variant="outline" onClick={handleRemoveAllFiles}>
+                <Button type="button" variant="outline" onClick={handleRemoveAllFiles}
+                        disabled={isSubmitting || files.length === 0}>
                     Clear
                 </Button>
-                <Button type="submit">
-                    Upload
+                <Button type="submit" disabled={isSubmitting || files.length === 0}>
+                    {isSubmitting ? "Uploading..." : "Upload"}
                 </Button>
             </div>
         </form>
