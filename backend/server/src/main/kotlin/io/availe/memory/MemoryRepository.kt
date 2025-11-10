@@ -1,6 +1,7 @@
 package io.availe.memory
 
 import com.pgvector.PGvector
+import io.availe.db.jooq.tables.references.MEMORIES
 import io.availe.db.jooq.tables.references.MEMORY_EDGES
 import org.jooq.DSLContext
 import java.util.*
@@ -80,7 +81,33 @@ internal class MemoryRepository(private val dslContext: DSLContext) {
             .execute()
     }
 
+    fun findAllMemories(): List<MemoryRecord> {
+        return dslContext.select(MEMORIES.ID, MEMORIES.CONTENT, MEMORIES.SOURCE_TYPE)
+            .from(MEMORIES)
+            .fetch { r ->
+                MemoryRecord(
+                    id = r[MEMORIES.ID]!!,
+                    content = r[MEMORIES.CONTENT]!!,
+                    sourceType = SourceType.valueOf(r[MEMORIES.SOURCE_TYPE]!!)
+                )
+            }
+    }
+
+    fun findAllEdges(): List<EdgeRecord> {
+        return dslContext.select(MEMORY_EDGES.SOURCE_ID, MEMORY_EDGES.TARGET_ID, MEMORY_EDGES.RELATIONSHIP)
+            .from(MEMORY_EDGES)
+            .fetch { r ->
+                EdgeRecord(
+                    sourceId = r[MEMORY_EDGES.SOURCE_ID]!!,
+                    targetId = r[MEMORY_EDGES.TARGET_ID]!!,
+                    relationship = RelationshipType.valueOf(r[MEMORY_EDGES.RELATIONSHIP]!!)
+                )
+            }
+    }
+
     data class ScoredMemory(val id: UUID, val content: String, val score: Double)
+    data class MemoryRecord(val id: UUID, val content: String, val sourceType: SourceType)
+    data class EdgeRecord(val sourceId: UUID, val targetId: UUID, val relationship: RelationshipType)
 
     enum class SourceType {
         TEXT,

@@ -2,6 +2,7 @@ package io.availe
 
 import io.availe.ai.OllamaEmbeddingService
 import io.availe.db.hikariSetup
+import io.availe.graph.GraphService
 import io.availe.memory.MemoryIngestionService
 import io.availe.memory.MemoryRepository
 import io.availe.server.Server
@@ -29,6 +30,7 @@ fun main() {
 
     val memoryRepository = MemoryRepository(dsl)
     val memoryIngestionService = MemoryIngestionService(embeddingService, memoryRepository)
+    val graphService = GraphService(memoryRepository)
 
-    Server(port, dsl, memoryIngestionService).start()
+    Server(port, dsl, memoryIngestionService, graphService).start()
 }

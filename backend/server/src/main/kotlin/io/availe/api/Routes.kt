@@ -1,11 +1,14 @@
 package io.availe.api
 
+import io.availe.graph.GraphService
 import io.availe.memory.MemoryIngestionService
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.utils.io.*
+import kotlinx.io.readByteArray
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,7 +17,10 @@ data class TextIngestRequest(val text: String)
 @Serializable
 data class IngestResponse(val id: String)
 
-internal fun Route.configureApiRoutes(memoryIngestionService: MemoryIngestionService) {
+internal fun Route.configureApiRoutes(
+    memoryIngestionService: MemoryIngestionService,
+    graphService: GraphService
+) {
     route("/health") {
         get {
             call.respond(HttpStatusCode.OK, "ok")
@@ -36,7 +42,8 @@ internal fun Route.configureApiRoutes(memoryIngestionService: MemoryIngestionSer
                 multipart.forEachPart { part ->
                     if (part is PartData.FileItem) {
                         val filename = part.originalFileName ?: "unknown"
-                        val bytes = part.streamProvider().readBytes()
+                        // Fix: Use non-blocking provider() and read all bytes
+                        val bytes = part.provider().readRemaining().readByteArray()
                         id = memoryIngestionService.ingestFile(filename, bytes).toString()
                     }
                     part.dispose()
@@ -47,6 +54,12 @@ internal fun Route.configureApiRoutes(memoryIngestionService: MemoryIngestionSer
                 } else {
                     call.respond(HttpStatusCode.BadRequest, "No file provided")
                 }
+            }
+        }
+
+        route("/graph") {
+            get {
+                call.respond(graphService.getGraphData())
             }
         }
     }

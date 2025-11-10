@@ -1,7 +1,7 @@
 package io.availe.server
 
-import com.xemantic.ai.tool.schema.mdc.mdcToolInput
 import io.availe.api.configureApiRoutes
+import io.availe.graph.GraphService
 import io.availe.memory.MemoryIngestionService
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -12,31 +12,32 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.routing.*
 import io.ktor.server.sse.*
-import io.modelcontextprotocol.kotlin.sdk.CallToolResult
 import io.modelcontextprotocol.kotlin.sdk.Implementation
 import io.modelcontextprotocol.kotlin.sdk.ServerCapabilities
-import io.modelcontextprotocol.kotlin.sdk.TextContent
 import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.server.ServerOptions
 import io.modelcontextprotocol.kotlin.sdk.server.mcp
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
 import org.jooq.DSLContext
 
 internal class Server(
     private val port: Int,
     private val dsl: DSLContext,
-    private val memoryIngestionService: MemoryIngestionService
+    private val memoryIngestionService: MemoryIngestionService,
+    private val graphService: GraphService
 ) {
     fun start() {
         embeddedServer(Netty, port = port) {
-            module(dsl, memoryIngestionService)
+            module(dsl, memoryIngestionService, graphService)
         }.start(wait = true)
     }
 }
 
-private fun Application.module(dsl: DSLContext, memoryIngestionService: MemoryIngestionService) {
+private fun Application.module(
+    dsl: DSLContext,
+    memoryIngestionService: MemoryIngestionService,
+    graphService: GraphService
+) {
     install(SSE)
     install(ContentNegotiation) {
         json()
@@ -51,7 +52,7 @@ private fun Application.module(dsl: DSLContext, memoryIngestionService: MemoryIn
     }
 
     routing {
-        configureApiRoutes(memoryIngestionService)
+        configureApiRoutes(memoryIngestionService, graphService)
         configureMcp()
     }
 }
@@ -68,27 +69,12 @@ private fun Routing.configureMcp() {
                 )
             )
         ).apply {
-            addEchoTool()
+            TODO()
         }
     }
 }
 
-@Serializable
-data class EchoArguments(val text: String)
-
 private val json = Json {
     ignoreUnknownKeys = true
     explicitNulls = false
-}
-
-private fun Server.addEchoTool() {
-    addTool(
-        name = "echo",
-        description = "Echoes the provided text back.",
-        inputSchema = mdcToolInput<EchoArguments>()
-    ) { req ->
-        val args = json.decodeFromJsonElement<EchoArguments>(req.arguments)
-        val output = args.text.ifBlank { "(empty)" }
-        CallToolResult(content = listOf(TextContent(output)))
-    }
 }

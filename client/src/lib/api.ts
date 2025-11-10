@@ -33,3 +33,29 @@ export async function ingestFile(file: File): Promise<string> {
     const data = await response.json();
     return data.id;
 }
+
+export interface GraphNode {
+    id: string;
+    label: string;
+    type: string;
+}
+
+export interface GraphEdge {
+    id: string;
+    source: string;
+    target: string;
+    label: string;
+}
+
+export interface GraphData {
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+}
+
+export async function fetchGraph(): Promise<GraphData> {
+    const response = await fetch(`${BASE_URL}/api/graph`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch graph: ${response.statusText}`);
+    }
+    return await response.json();
+}
