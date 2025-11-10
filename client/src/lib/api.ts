@@ -2,9 +2,9 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function ingestText(text: string): Promise<string> {
     const response = await fetch(`${BASE_URL}/api/memory/text`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({text}),
     });
@@ -19,10 +19,10 @@ export async function ingestText(text: string): Promise<string> {
 
 export async function ingestFile(file: File): Promise<string> {
     const formData = new FormData();
-    formData.append('document', file);
+    formData.append("document", file);
 
     const response = await fetch(`${BASE_URL}/api/memory/file`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
     });
 
@@ -34,10 +34,13 @@ export async function ingestFile(file: File): Promise<string> {
     return data.id;
 }
 
-export interface GraphNode {
+export interface GraphNode extends Record<string, unknown> {
     id: string;
     label: string;
     type: string;
+    fullContent: string;
+    metadata: string;
+    createdAt: string;
 }
 
 export interface GraphEdge {

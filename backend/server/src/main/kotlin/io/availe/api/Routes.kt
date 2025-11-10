@@ -42,7 +42,6 @@ internal fun Route.configureApiRoutes(
                 multipart.forEachPart { part ->
                     if (part is PartData.FileItem) {
                         val filename = part.originalFileName ?: "unknown"
-                        // Fix: Use non-blocking provider() and read all bytes
                         val bytes = part.provider().readRemaining().readByteArray()
                         id = memoryIngestionService.ingestFile(filename, bytes).toString()
                     }

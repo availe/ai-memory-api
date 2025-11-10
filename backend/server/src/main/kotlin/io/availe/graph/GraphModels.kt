@@ -6,7 +6,10 @@ import kotlinx.serialization.Serializable
 data class GraphNode(
     val id: String,
     val label: String,
-    val type: String
+    val type: String,
+    val fullContent: String,
+    val metadata: String,
+    val createdAt: String
 )
 
 @Serializable

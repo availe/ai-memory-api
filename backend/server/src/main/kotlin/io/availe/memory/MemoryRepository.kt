@@ -4,6 +4,8 @@ import com.pgvector.PGvector
 import io.availe.db.jooq.tables.references.MEMORIES
 import io.availe.db.jooq.tables.references.MEMORY_EDGES
 import org.jooq.DSLContext
+import org.jooq.JSONB
+import java.time.OffsetDateTime
 import java.util.*
 
 internal class MemoryRepository(private val dslContext: DSLContext) {
@@ -82,13 +84,21 @@ internal class MemoryRepository(private val dslContext: DSLContext) {
     }
 
     fun findAllMemories(): List<MemoryRecord> {
-        return dslContext.select(MEMORIES.ID, MEMORIES.CONTENT, MEMORIES.SOURCE_TYPE)
+        return dslContext.select(
+            MEMORIES.ID,
+            MEMORIES.CONTENT,
+            MEMORIES.SOURCE_TYPE,
+            MEMORIES.METADATA,
+            MEMORIES.CREATED_AT
+        )
             .from(MEMORIES)
             .fetch { r ->
                 MemoryRecord(
                     id = r[MEMORIES.ID]!!,
                     content = r[MEMORIES.CONTENT]!!,
-                    sourceType = SourceType.valueOf(r[MEMORIES.SOURCE_TYPE]!!)
+                    sourceType = SourceType.valueOf(r[MEMORIES.SOURCE_TYPE]!!),
+                    metadata = r[MEMORIES.METADATA]!!,
+                    createdAt = r[MEMORIES.CREATED_AT]!!
                 )
             }
     }
@@ -106,7 +116,14 @@ internal class MemoryRepository(private val dslContext: DSLContext) {
     }
 
     data class ScoredMemory(val id: UUID, val content: String, val score: Double)
-    data class MemoryRecord(val id: UUID, val content: String, val sourceType: SourceType)
+    data class MemoryRecord(
+        val id: UUID,
+        val content: String,
+        val sourceType: SourceType,
+        val metadata: JSONB,
+        val createdAt: OffsetDateTime
+    )
+
     data class EdgeRecord(val sourceId: UUID, val targetId: UUID, val relationship: RelationshipType)
 
     enum class SourceType {
