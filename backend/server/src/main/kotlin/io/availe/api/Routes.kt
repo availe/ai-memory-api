@@ -9,13 +9,29 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 import kotlinx.io.readByteArray
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import java.util.*
 
 @Serializable
 data class TextIngestRequest(val text: String)
 
 @Serializable
 data class IngestResponse(val id: String)
+
+@Serializable
+data class CreateEdgeRequest(
+    val sourceId: String,
+    val targetId: String,
+    val type: String
+)
+
+@Serializable
+data class SearchResult(
+    val id: @Contextual UUID,
+    val content: String,
+    val score: Double
+)
 
 internal fun Route.configureApiRoutes(
     memoryIngestionService: MemoryIngestionService,
@@ -49,16 +65,38 @@ internal fun Route.configureApiRoutes(
                 }
 
                 if (id != null) {
-                    call.respond(HttpStatusCode.Created, IngestResponse(id!!))
+                    call.respond(HttpStatusCode.Created, IngestResponse(id))
                 } else {
                     call.respond(HttpStatusCode.BadRequest, "No file provided")
                 }
+            }
+
+            get("/search") {
+                val query = call.request.queryParameters["q"]
+                if (query.isNullOrBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, "Missing query parameter 'q'")
+                    return@get
+                }
+                val results = graphService.search(query).map {
+                    SearchResult(it.id, it.content, it.score)
+                }
+                call.respond(results)
             }
         }
 
         route("/graph") {
             get {
                 call.respond(graphService.getGraphData())
+            }
+
+            post("/edges") {
+                val req = call.receive<CreateEdgeRequest>()
+                try {
+                    graphService.createEdge(req.sourceId, req.targetId, req.type)
+                    call.respond(HttpStatusCode.Created)
+                } catch (e: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid request")
+                }
             }
         }
     }

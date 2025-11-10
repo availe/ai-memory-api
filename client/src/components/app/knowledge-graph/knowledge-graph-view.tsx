@@ -1,92 +1,37 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
     addEdge,
-    Background,
     type Connection,
-    Controls,
     type Edge,
-    MiniMap,
     type Node,
-    Position,
-    ReactFlow,
+    ReactFlowProvider,
     useEdgesState,
     useNodesState,
+    useReactFlow
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import dagre from 'dagre';
-import {fetchGraph, type GraphNode} from "@/lib/api.ts";
-import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle,} from "@/components/ui/sheet";
-import {Badge} from "@/components/ui/badge.tsx";
-import {ScrollArea} from "@/components/ui/scroll-area.tsx";
-import {Separator} from "@/components/ui/separator.tsx";
+import {createEdge, fetchGraph, type GraphNode} from "@/lib/api.ts";
+import {NodeDetailsSheet} from "@/components/app/knowledge-graph/node-details-sheet.tsx";
+import {KnowledgeGraphCanvas} from "@/components/app/knowledge-graph/knowledge-graph-canvas.tsx";
+import {MemorySearchSidebar} from "@/components/app/knowledge-graph/memory-search-sidebar.tsx";
+import {CreateEdgeDialog} from "@/components/app/knowledge-graph/create-edge-dialog.tsx";
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
+export type MemoryNode = Node<GraphNode>;
 
-const nodeWidth = 180;
-const nodeHeight = 50;
-
-const getLayoutedElements = <D extends Record<string, unknown>>(nodes: Node<D>[], edges: Edge[], direction: 'TB' | 'LR' = 'TB') => {
-    const isHorizontal = direction === 'LR';
-    dagreGraph.setGraph({rankdir: direction});
-
-    nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, {width: nodeWidth, height: nodeHeight});
-    });
-
-    edges.forEach((edge) => {
-        dagreGraph.setEdge(edge.source, edge.target);
-    });
-
-    dagre.layout(dagreGraph);
-
-    const newNodes = nodes.map<Node<D>>((node) => {
-        const nodeWithPosition = dagreGraph.node(node.id);
-        return {
-            ...node,
-            targetPosition: isHorizontal ? Position.Left : Position.Top,
-            sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
-            position: {
-                x: nodeWithPosition.x - nodeWidth / 2,
-                y: nodeWithPosition.y - nodeHeight / 2,
-            },
-        };
-    });
-
-    return {nodes: newNodes, edges};
-};
-
-type MemoryNode = Node<GraphNode>;
-
-export function KnowledgeGraphView() {
+function KnowledgeGraphViewContent() {
     const [nodes, setNodes, onNodesChange] = useNodesState<MemoryNode>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const [selectedNode, setSelectedNode] = useState<MemoryNode | null>(null);
+    const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
+    const {setCenter} = useReactFlow();
 
-    const onConnect = useCallback(
-        (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges],
-    );
-
-    const onNodeClick = useCallback((_: React.MouseEvent, node: MemoryNode) => {
-        setSelectedNode(node);
-    }, []);
-
-    useEffect(() => {
+    const refreshGraph = () => {
         fetchGraph().then(data => {
             const initialNodes: MemoryNode[] = data.nodes.map(n => ({
                 id: n.id,
                 data: {...n},
                 position: {x: 0, y: 0},
-                style: {
-                    background: n.type === 'FILE' ? '#eef2ff' : '#fff',
-                    border: '1px solid #777',
-                    borderRadius: '8px',
-                    padding: '10px',
-                    fontSize: '12px',
-                    width: nodeWidth,
-                    cursor: 'pointer',
-                }
+                type: 'default'
             }));
 
             const initialEdges: Edge[] = data.edges.map(e => ({
@@ -94,83 +39,93 @@ export function KnowledgeGraphView() {
                 source: e.source,
                 target: e.target,
                 label: e.label,
-                animated: true,
-                style: {stroke: '#555'}
+                animated: e.label === 'EXTEND',
+                style: {
+                    stroke: e.label === 'UPDATE' ? '#ef4444' :
+                        e.label === 'DERIVE' ? '#a855f7' : '#555'
+                }
             }));
 
-            const {
-                nodes: layoutedNodes,
-                edges: layoutedEdges
-            } = getLayoutedElements<GraphNode>(initialNodes, initialEdges);
-
-            setNodes(layoutedNodes);
-            setEdges(layoutedEdges);
+            setNodes(initialNodes);
+            setEdges(initialEdges);
         }).catch(err => console.error("Failed to load graph", err));
-    }, [setNodes, setEdges]);
+    };
+
+    useEffect(() => {
+        refreshGraph();
+    }, []);
+
+    const handleConnect = (connection: Connection) => {
+        if (connection.source !== connection.target) {
+            setPendingConnection(connection);
+        }
+    };
+
+    const handleCreateEdgeConfirm = async (type: 'EXTEND' | 'UPDATE' | 'DERIVE') => {
+        if (!pendingConnection?.source || !pendingConnection?.target) return;
+
+        try {
+            await createEdge(pendingConnection.source, pendingConnection.target, type);
+            setEdges((eds) => addEdge({
+                ...pendingConnection,
+                label: type,
+                animated: type === 'EXTEND',
+                style: {
+                    stroke: type === 'UPDATE' ? '#ef4444' :
+                        type === 'DERIVE' ? '#a855f7' : '#555'
+                }
+            }, eds));
+        } catch (e) {
+            console.error(e);
+            alert("Failed to create edge. See console.");
+        } finally {
+            setPendingConnection(null);
+        }
+    };
+
+    const handleSearchResultClick = (nodeId: string) => {
+        const node = nodes.find(n => n.id === nodeId);
+        if (node) {
+            setCenter(node.position.x, node.position.y, {zoom: 1.5, duration: 800});
+            setSelectedNode(node);
+        }
+    };
 
     return (
-        <div className="w-full h-full min-h-[500px] border rounded-lg bg-slate-50" style={{height: '600px'}}>
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onNodeClick={onNodeClick}
-                fitView
-            >
-                <Controls/>
-                <MiniMap/>
-                <Background gap={12} size={1}/>
-            </ReactFlow>
+        <div className="w-full h-full flex border rounded-lg overflow-hidden bg-slate-50"
+             style={{height: 'calc(100vh - 8rem)'}}>
+            <div className="w-80 border-r bg-white">
+                <MemorySearchSidebar onResultClick={handleSearchResultClick}/>
+            </div>
+            <div className="flex-1 h-full relative">
+                <KnowledgeGraphCanvas
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={handleConnect}
+                    onNodeClick={setSelectedNode}
+                />
+            </div>
 
-            <Sheet open={!!selectedNode} onOpenChange={(open) => !open && setSelectedNode(null)}>
-                <SheetContent className="w-[400px] sm:w-[540px]">
-                    <SheetHeader className="mb-4">
-                        <div className="flex items-center gap-2">
-                            <Badge variant={selectedNode?.data.type === 'FILE' ? 'secondary' : 'default'}>
-                                {selectedNode?.data.type}
-                            </Badge>
-                            <SheetTitle className="truncate">Memory Details</SheetTitle>
-                        </div>
-                        <SheetDescription>
-                            Created {selectedNode?.data.createdAt && new Date(selectedNode.data.createdAt).toLocaleString()}
-                        </SheetDescription>
-                    </SheetHeader>
+            <NodeDetailsSheet
+                node={selectedNode}
+                onClose={() => setSelectedNode(null)}
+            />
 
-                    {selectedNode && (
-                        <div className="flex flex-col gap-4 h-full max-h-[calc(100vh-10rem)]">
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Content</h4>
-                                <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/50">
-                                    <pre className="text-sm whitespace-pre-wrap font-sans">
-                                        {selectedNode.data.fullContent}
-                                    </pre>
-                                </ScrollArea>
-                            </div>
-
-                            {selectedNode.data.metadata && selectedNode.data.metadata !== "{}" && (
-                                <>
-                                    <Separator/>
-                                    <div>
-                                        <h4 className="text-sm font-medium mb-2">Metadata</h4>
-                                        <ScrollArea className="h-[100px] w-full rounded-md border p-4 bg-muted/50">
-                                            <pre className="text-xs">
-                                                {JSON.stringify(JSON.parse(selectedNode.data.metadata as string), null, 2)}
-                                            </pre>
-                                        </ScrollArea>
-                                    </div>
-                                </>
-                            )}
-
-                            <Separator/>
-                            <div className="text-xs text-muted-foreground">
-                                ID: {selectedNode.id}
-                            </div>
-                        </div>
-                    )}
-                </SheetContent>
-            </Sheet>
+            <CreateEdgeDialog
+                isOpen={!!pendingConnection}
+                onClose={() => setPendingConnection(null)}
+                onConfirm={handleCreateEdgeConfirm}
+            />
         </div>
+    );
+}
+
+export function KnowledgeGraphView() {
+    return (
+        <ReactFlowProvider>
+            <KnowledgeGraphViewContent/>
+        </ReactFlowProvider>
     );
 }

@@ -62,3 +62,35 @@ export async function fetchGraph(): Promise<GraphData> {
     }
     return await response.json();
 }
+
+export interface SearchResult {
+    id: string;
+    content: string;
+    score: number;
+}
+
+export async function searchMemory(query: string): Promise<SearchResult[]> {
+    const params = new URLSearchParams({q: query});
+    const response = await fetch(`${BASE_URL}/api/memory/search?${params.toString()}`);
+
+    if (!response.ok) {
+        throw new Error(`Search failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
+export async function createEdge(sourceId: string, targetId: string, type: 'EXTEND' | 'UPDATE' | 'DERIVE'): Promise<void> {
+    const response = await fetch(`${BASE_URL}/api/graph/edges`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({sourceId, targetId, type}),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to create edge: ${errorText || response.statusText}`);
+    }
+}

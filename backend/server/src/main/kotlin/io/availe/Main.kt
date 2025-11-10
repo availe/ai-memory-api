@@ -30,7 +30,7 @@ fun main() {
 
     val memoryRepository = MemoryRepository(dsl)
     val memoryIngestionService = MemoryIngestionService(embeddingService, memoryRepository)
-    val graphService = GraphService(memoryRepository)
+    val graphService = GraphService(memoryRepository, embeddingService)
 
     Server(port, dsl, memoryIngestionService, graphService).start()
 }

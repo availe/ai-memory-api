@@ -9,7 +9,6 @@ import java.time.OffsetDateTime
 import java.util.*
 
 internal class MemoryRepository(private val dslContext: DSLContext) {
-
     fun save(
         content: String,
         embedding: List<Float>,
@@ -79,7 +78,8 @@ internal class MemoryRepository(private val dslContext: DSLContext) {
             .set(MEMORY_EDGES.SOURCE_ID, sourceId)
             .set(MEMORY_EDGES.TARGET_ID, targetId)
             .set(MEMORY_EDGES.RELATIONSHIP, relationship.name)
-            .onDuplicateKeyIgnore()
+            .onDuplicateKeyUpdate()
+            .set(MEMORY_EDGES.RELATIONSHIP, relationship.name)
             .execute()
     }
 

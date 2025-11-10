@@ -1,9 +1,14 @@
 package io.availe.graph
 
+import io.availe.ai.EmbeddingService
 import io.availe.memory.MemoryRepository
 import org.slf4j.LoggerFactory
+import java.util.*
 
-internal class GraphService(private val memoryRepository: MemoryRepository) {
+internal class GraphService(
+    private val memoryRepository: MemoryRepository,
+    private val embeddingService: EmbeddingService
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     fun getGraphData(): GraphData {
@@ -35,5 +40,24 @@ internal class GraphService(private val memoryRepository: MemoryRepository) {
 
         logger.info("Returning GraphData with ${nodes.size} nodes and ${graphEdges.size} edges.")
         return GraphData(nodes, graphEdges)
+    }
+
+    suspend fun search(query: String): List<MemoryRepository.ScoredMemory> {
+        logger.info("Searching for: '$query'")
+        val embedding = embeddingService.embed(query)
+        return memoryRepository.findSimilar(embedding, limit = 10, threshold = 0.55)
+    }
+
+    fun createEdge(sourceIdStr: String, targetIdStr: String, typeStr: String) {
+        val sourceId = UUID.fromString(sourceIdStr)
+        val targetId = UUID.fromString(targetIdStr)
+        val type = try {
+            MemoryRepository.RelationshipType.valueOf(typeStr.uppercase())
+        } catch (e: IllegalArgumentException) {
+            throw IllegalArgumentException("Invalid relationship type: $typeStr. Valid types are: ${MemoryRepository.RelationshipType.entries.joinToString()}")
+        }
+
+        logger.info("Creating edge: $sourceId -[$type]-> $targetId")
+        memoryRepository.createEdge(sourceId, targetId, type)
     }
 }
