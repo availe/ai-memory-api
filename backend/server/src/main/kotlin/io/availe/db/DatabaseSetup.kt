@@ -1,4 +1,4 @@
-package io.availe.http4k
+package io.availe.db
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource

@@ -11,7 +11,16 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.jooq.codegen)
     alias(libs.plugins.flyway)
+    alias(libs.plugins.ktor)
 }
+
+application {
+    mainClass.set("io.availe.demo.MainKt")
+
+    val isDevelopment: Boolean = project.ext.has("development")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
 
 val dbUrl = providers.gradleProperty("aimemory.db.url")
 val dbUser = providers.gradleProperty("aimemory.db.user")
@@ -25,19 +34,14 @@ repositories {
 }
 
 dependencies {
-    implementation(platform(libs.http4k.bom))
-    implementation(libs.http4k.core)
-    implementation(libs.http4k.server.helidon)
-    implementation(libs.http4k.api.openapi)
-    implementation(libs.http4k.format.jackson)
-    implementation(libs.http4k.multipart)
-    implementation(libs.http4k.client.okhttp)
-
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.java)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.cors)
+    implementation(libs.ktor.server.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
     implementation(libs.modelcontextprotocol.kotlin.sdk)
     implementation(libs.kotlinx.serialization.json)

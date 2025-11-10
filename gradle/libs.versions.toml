@@ -29,6 +29,9 @@ ktor-client-core = { module = "io.ktor:ktor-client-core" }
 ktor-client-java = { module = "io.ktor:ktor-client-java" }
 ktor-server-core = { module = "io.ktor:ktor-server-core" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty" }
+ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 xemantic-ai-tool-schema-mdc = { module = "com.xemantic.ai:xemantic-ai-tool-schema-mdc", version.ref = "xemanticMdc" }
 docker-java = { module = "com.github.docker-java:docker-java" }
