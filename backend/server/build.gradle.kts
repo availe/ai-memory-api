@@ -15,12 +15,11 @@ plugins {
 }
 
 application {
-    mainClass.set("io.availe.demo.MainKt")
+    mainClass.set("io.availe.MainKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
-
 
 val dbUrl = providers.gradleProperty("aimemory.db.url")
 val dbUser = providers.gradleProperty("aimemory.db.user")
@@ -37,6 +36,7 @@ dependencies {
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.java)
+    implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.cors)
@@ -52,6 +52,7 @@ dependencies {
     jooqCodegen(libs.postgresql)
     implementation(libs.postgresql)
     implementation(libs.flyway.database.postgresql)
+    implementation(libs.pgvector)
 }
 
 jooq {
@@ -66,11 +67,11 @@ jooq {
             name = "org.jooq.codegen.KotlinGenerator"
             database {
                 name = "org.jooq.meta.postgres.PostgresDatabase"
-                inputSchema = "ai-memory-api"
+                inputSchema = "ai_memory_api"
                 excludes = "flyway_schema_history"
             }
             target {
-                packageName = "com.example.jooq"
+                packageName = "io.availe.db.jooq"
             }
         }
     }
@@ -80,7 +81,7 @@ flyway {
     url = dbUrl.get()
     user = dbUser.get()
     password = dbPassword.get()
-    schemas = arrayOf("availe")
+    schemas = arrayOf("ai_memory_api")
     createSchemas = true
 }
 

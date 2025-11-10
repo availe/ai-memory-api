@@ -1,8 +1,7 @@
-import com.github.gmazzo.buildconfig.BuildConfigSourceSet
 import io.availe.buildlogic.getHostIpAddress
 
 plugins {
-    kotlin("jvm") version "2.3.0-Beta2"
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.gradle.buildconfig)
 }
 
@@ -15,12 +14,18 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(kotlin("test"))
-}
+kotlin {
+    jvm()
+    js {
+        outputModuleName = "shared"
+        browser()
+        binaries.library()
+        generateTypeScriptDefinitions()
 
-tasks.test {
-    useJUnitPlatform()
+        compilerOptions {
+            target = "es2015"
+        }
+    }
 }
 
 val hostIpProvider = providers.provider {
@@ -39,7 +44,5 @@ buildConfig {
         internalVisibility = false
     }
 
-    sourceSets.named<BuildConfigSourceSet>("main") {
-        buildConfigField("String", "HOST_IP", hostIpProvider)
-    }
+    buildConfigField("String", "HOST_IP", hostIpProvider)
 }

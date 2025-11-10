@@ -2,7 +2,6 @@ import {AppNavigationMenu} from "@/components/app/navigation-menu/app-navigation
 import {MemoryIngestPanel} from "@/components/app/memory-ingest/memory-ingest-panel.tsx";
 
 function App() {
-
     return (
         <div className="min-h-screen w-full flex flex-col">
             <header

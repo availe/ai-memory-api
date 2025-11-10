@@ -1,6 +1,9 @@
 package io.availe
 
+import io.availe.ai.OllamaEmbeddingService
 import io.availe.db.hikariSetup
+import io.availe.memory.MemoryIngestionService
+import io.availe.memory.MemoryRepository
 import io.availe.server.Server
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
@@ -11,6 +14,11 @@ import org.jooq.impl.DefaultConfiguration
 fun main() {
     val port = 9002
 
+    val embeddingService = OllamaEmbeddingService(
+        baseUrl = System.getenv("OLLAMA_BASE_URL") ?: "http://localhost:11434",
+        modelName = System.getenv("OLLAMA_MODEL") ?: "nomic-embed-text"
+    )
+
     val dataSource = hikariSetup()
     val dsl: DSLContext = DSL.using(
         DefaultConfiguration()
@@ -19,5 +27,8 @@ fun main() {
             .set(Settings().withReturnDefaultOnUpdatableRecord(true))
     )
 
-    Server(port, dsl).start()
+    val memoryRepository = MemoryRepository(dsl)
+    val memoryIngestionService = MemoryIngestionService(embeddingService, memoryRepository)
+
+    Server(port, dsl, memoryIngestionService).start()
 }

@@ -2,6 +2,7 @@ package io.availe.server
 
 import com.xemantic.ai.tool.schema.mdc.mdcToolInput
 import io.availe.api.configureApiRoutes
+import io.availe.memory.MemoryIngestionService
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -25,16 +26,17 @@ import org.jooq.DSLContext
 
 internal class Server(
     private val port: Int,
-    private val dsl: DSLContext
+    private val dsl: DSLContext,
+    private val memoryIngestionService: MemoryIngestionService
 ) {
     fun start() {
         embeddedServer(Netty, port = port) {
-            module(dsl)
+            module(dsl, memoryIngestionService)
         }.start(wait = true)
     }
 }
 
-private fun Application.module(dsl: DSLContext) {
+private fun Application.module(dsl: DSLContext, memoryIngestionService: MemoryIngestionService) {
     install(SSE)
     install(ContentNegotiation) {
         json()
@@ -49,7 +51,7 @@ private fun Application.module(dsl: DSLContext) {
     }
 
     routing {
-        configureApiRoutes()
+        configureApiRoutes(memoryIngestionService)
         configureMcp()
     }
 }

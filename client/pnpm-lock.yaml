@@ -56,6 +56,9 @@ importers:
       react-dropzone:
         specifier: ^14.3.8
         version: 14.3.8(react@19.2.0)
+      shared:
+        specifier: file:../backend/shared/build/dist/js/developmentLibrary
+        version: ai-memory-api-backend-shared@file:../backend/shared/build/dist/js/developmentLibrary
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
@@ -967,6 +970,10 @@ packages:
     resolution: {integrity: sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  ai-memory-api-backend-shared@file:../backend/shared/build/dist/js/developmentLibrary:
+    resolution: {directory: ../backend/shared/build/dist/js/developmentLibrary, type: directory}
+    bundledDependencies: []
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
@@ -2572,6 +2579,8 @@ snapshots:
       acorn: 8.15.0
 
   acorn@8.15.0: {}
+
+  ai-memory-api-backend-shared@file:../backend/shared/build/dist/js/developmentLibrary: {}
 
   ajv@6.12.6:
     dependencies:

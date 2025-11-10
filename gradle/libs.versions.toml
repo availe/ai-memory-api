@@ -1,6 +1,5 @@
 [versions]
 kotlin = "2.3.0-Beta2"
-http4kBom = "6.20.1.0"
 mcp = "0.7.6"
 ktor = "3.3.2"
 kotlinxSerialization = "1.9.0"
@@ -13,16 +12,9 @@ gradle-buildconfig = "5.7.1"
 jooq = "3.20.8"
 flyway = "11.16.0"
 hikari = "7.0.2"
+pgvector = "0.1.6"
 
 [libraries]
-http4k-api-openapi = { module = "org.http4k:http4k-api-openapi" }
-http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4kBom" }
-http4k-core = { module = "org.http4k:http4k-core" }
-http4k-server-helidon = { module = "org.http4k:http4k-server-helidon" }
-http4k-client-okhttp = { module = "org.http4k:http4k-client-okhttp" }
-http4k-format-jackson = { module = "org.http4k:http4k-format-jackson" }
-http4k-multipart = { module = "org.http4k:http4k-multipart" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 modelcontextprotocol-kotlin-sdk = { module = "io.modelcontextprotocol:kotlin-sdk", version.ref = "mcp" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core" }
@@ -31,6 +23,7 @@ ktor-server-core = { module = "io.ktor:ktor-server-core" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty" }
 ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 xemantic-ai-tool-schema-mdc = { module = "com.xemantic.ai:xemantic-ai-tool-schema-mdc", version.ref = "xemanticMdc" }
@@ -43,6 +36,7 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 flyway-database-postgresql = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flyway" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 hikariCP = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+pgvector = { module = "com.pgvector:pgvector", version.ref = "pgvector" }
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -51,3 +45,4 @@ gradle-buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "grad
 flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 jooq-codegen = { id = "org.jooq.jooq-codegen-gradle", version.ref = "jooq" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
