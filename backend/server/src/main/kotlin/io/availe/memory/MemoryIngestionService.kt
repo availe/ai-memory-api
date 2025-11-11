@@ -16,15 +16,37 @@ internal class MemoryIngestionService(
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    private fun chunkText(text: String): List<String> {
-        return text.split("\n\n")
+    private fun chunkText(
+        text: String,
+        maxChunkSize: Int = 1000,
+        minChunkSize: Int = 20
+    ): List<String> {
+        val paragraphs = text.split("\n\n")
             .map { it.trim() }
-            .filter { it.length > 20 }
+            .filter { it.length > minChunkSize }
+
+        val finalChunks = mutableListOf<String>()
+
+        for (paragraph in paragraphs) {
+            if (paragraph.length <= maxChunkSize) {
+                finalChunks.add(paragraph)
+            } else {
+                finalChunks.addAll(
+                    paragraph.chunked(maxChunkSize)
+                        .map { it.trim() }
+                        .filter { it.length > minChunkSize }
+                )
+            }
+        }
+        return finalChunks
     }
+
 
     suspend fun ingestText(text: String): UUID {
         logger.info("Ingesting text...")
-        val chunks = chunkText(text)
+
+        val normalizedText = text.replace(Regex("(\r\n|\r|\n){2,}"), "\n\n")
+        val chunks = chunkText(normalizedText)
 
         if (chunks.isEmpty()) {
             if (text.length > 20) {

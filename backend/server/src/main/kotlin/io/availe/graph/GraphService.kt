@@ -58,7 +58,7 @@ internal class GraphService(
         val targetId = UUID.fromString(targetIdStr)
         val type = try {
             MemoryRepository.RelationshipType.valueOf(typeStr.uppercase())
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             throw IllegalArgumentException("Invalid relationship type: $typeStr. Valid types are: ${MemoryRepository.RelationshipType.entries.joinToString()}")
         }
 
