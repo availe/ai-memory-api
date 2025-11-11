@@ -29,14 +29,14 @@ internal class InfrastructureManager(
         logger.info("Provisioning Postgres (creating schema)...")
         postgresProvisioner.provision()
 
-        logger.info("Starting Keycloak container...")
-        containerOrchestrator.orchestrationSetup(listOf(keycloakSpec))
-
-        ServiceWaiter.waitForKeycloak()
-        logger.info("Keycloak is ready.")
-
-        logger.info("All services are healthy. Starting Keycloak provisioning...")
-        keycloakProvisioner.provision()
+//        logger.info("Starting Keycloak container...")
+//        containerOrchestrator.orchestrationSetup(listOf(keycloakSpec))
+//
+//        ServiceWaiter.waitForKeycloak()
+//        logger.info("Keycloak is ready.")
+//
+//        logger.info("All services are healthy. Starting Keycloak provisioning...")
+//        keycloakProvisioner.provision()
     }
 
     fun teardown() {

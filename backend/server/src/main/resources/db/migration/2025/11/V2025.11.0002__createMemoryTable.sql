@@ -16,7 +16,7 @@ create table memory_edges
     target_id    uuid        not null references memories (id) on delete cascade,
     relationship text        not null,
     created_at   timestamptz not null default now(),
-    primary key (source_id, target_id, relationship)
+    primary key (source_id, target_id)
 );
 
 create index on memory_edges (source_id);

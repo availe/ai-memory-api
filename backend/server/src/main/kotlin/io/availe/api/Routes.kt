@@ -9,8 +9,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 import kotlinx.io.readByteArray
-import kotlinx.serialization.Contextual
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.util.*
 
 @Serializable
@@ -26,9 +30,16 @@ data class CreateEdgeRequest(
     val type: String
 )
 
+object UUIDSerializer : KSerializer<UUID> {
+    override val descriptor = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
+    override fun serialize(encoder: Encoder, value: UUID) = encoder.encodeString(value.toString())
+    override fun deserialize(decoder: Decoder): UUID = UUID.fromString(decoder.decodeString())
+}
+
 @Serializable
 data class SearchResult(
-    val id: @Contextual UUID,
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
     val content: String,
     val score: Double
 )
@@ -65,7 +76,7 @@ internal fun Route.configureApiRoutes(
                 }
 
                 if (id != null) {
-                    call.respond(HttpStatusCode.Created, IngestResponse(id))
+                    call.respond(HttpStatusCode.Created, IngestResponse(id!!))
                 } else {
                     call.respond(HttpStatusCode.BadRequest, "No file provided")
                 }

@@ -45,7 +45,12 @@ internal class GraphService(
     suspend fun search(query: String): List<MemoryRepository.ScoredMemory> {
         logger.info("Searching for: '$query'")
         val embedding = embeddingService.embed(query)
-        return memoryRepository.findSimilar(embedding, limit = 10, threshold = 0.55)
+
+        val results = memoryRepository.findSimilar(embedding, limit = 10, threshold = 0.50)
+
+        logger.info(">>> DEBUG: Found ${results.size} results. Scores: ${results.map { it.score }}")
+
+        return results
     }
 
     fun createEdge(sourceIdStr: String, targetIdStr: String, typeStr: String) {

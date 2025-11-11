@@ -75,6 +75,10 @@ jooq {
             target {
                 packageName = "io.availe.db.jooq"
             }
+            generate {
+                isImplicitJoinPathsToOne = false
+                isImplicitJoinPathsToMany = false
+            }
         }
     }
 }

@@ -46,6 +46,7 @@ internal class MemoryRepository(private val dslContext: DSLContext) {
                 select id, content, (1 - (embedding <=> ?)) as score
                 from ai_memory_api.memories
                 where (1 - (embedding <=> ?)) >= ?
+                and (metadata ->> 'isParent' IS NULL)
                 order by score desc
                 limit ?
             """.trimIndent()
@@ -134,6 +135,7 @@ internal class MemoryRepository(private val dslContext: DSLContext) {
     enum class RelationshipType {
         EXTEND,
         UPDATE,
-        DERIVE
+        DERIVE,
+        BELONGS_TO
     }
 }
