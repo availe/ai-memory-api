@@ -4,7 +4,7 @@ Steps to Run:
 2) Install Ollama and run `ollama pull nomic-embed-text`
 3) Open project.
 
-The project is meant to be consumed with a user-level `gradle.properties` files to set up environment variables. However, since you're unlikely to have this pre-preared, instead, we can use CLI arguments (which is more verbose, but we can simply copy paste them).
+The project is meant to be consumed with a user-level `gradle.properties` files to set up environment variables. However, since you're unlikely to have this pre-prepared, instead, we can use CLI arguments (which is more verbose, but we can simply copy paste them).
 
 4)To set up project Postgres database, run:
 ```
