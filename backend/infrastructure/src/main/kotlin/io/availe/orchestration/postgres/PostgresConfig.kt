@@ -1,7 +1,7 @@
 package io.availe.orchestration.postgres
 
+import io.availe.loadGradleProperties
 import io.availe.orchestration.containers.domain.ContainerRunSpecification
-import io.availe.utils.loadGradleProperties
 
 internal data class PostgresConfig(
     val dbUrl: String,

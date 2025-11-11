@@ -3,24 +3,14 @@ package io.availe.db
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.postgresql.PGProperty
-import java.io.File
-import java.util.*
 
 internal fun hikariSetup(): HikariDataSource {
-    val gradlePropertiesFilePath = File(System.getProperty("user.home"), ".gradle/gradle.properties")
-
-    check(gradlePropertiesFilePath.exists()) {
-        "Gradle properties file not found at ${gradlePropertiesFilePath.absolutePath}"
-    }
-
-    val props = Properties().apply {
-        gradlePropertiesFilePath.reader().use { load(it) }
-    }
+    val props = loadGradleProperties()
 
     val hikariConfig = HikariConfig().apply {
-        jdbcUrl = props.getProperty("aimemory.db.url") ?: error("No db.url found in gradle.properties")
-        username = props.getProperty("aimemory.db.user") ?: error("No db.user found in gradle.properties")
-        password = props.getProperty("aimemory.db.password") ?: error("No db.password found in gradle.properties")
+        jdbcUrl = props.getProperty("aimemory.db.url") ?: error("No aimemory.db.url found")
+        username = props.getProperty("aimemory.db.user") ?: error("No aimemory.db.user found")
+        password = props.getProperty("aimemory.db.password") ?: error("No aimemory.db.password found")
         addDataSourceProperty(PGProperty.TCP_KEEP_ALIVE.getName(), true)
     }
 

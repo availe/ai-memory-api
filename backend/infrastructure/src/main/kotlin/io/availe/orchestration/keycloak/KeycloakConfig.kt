@@ -1,9 +1,9 @@
 package io.availe.orchestration.keycloak
 
 import io.availe.NetworkConstants
+import io.availe.loadGradleProperties
 import io.availe.orchestration.containers.domain.ContainerRunSpecification
 import io.availe.orchestration.postgres.loadPostgresConfig
-import io.availe.utils.loadGradleProperties
 
 internal data class KeycloakConfig(
     val adminUser: String,

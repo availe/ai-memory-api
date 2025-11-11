@@ -24,6 +24,8 @@ application {
 val dbUrl = providers.gradleProperty("aimemory.db.url")
 val dbUser = providers.gradleProperty("aimemory.db.user")
 val dbPassword = providers.gradleProperty("aimemory.db.password")
+val keycloakUser = providers.gradleProperty("keycloak.admin.user")
+val keycloakPassword = providers.gradleProperty("keycloak.admin.password")
 
 group = "io.availe"
 version = "1.0-SNAPSHOT"
@@ -33,6 +35,7 @@ repositories {
 }
 
 dependencies {
+    implementation(projects.backend.shared)
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.java)
@@ -109,4 +112,12 @@ tasks.withType<AbstractFlywayTask> {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.named<JavaExec>("run") {
+    systemProperty("aimemory.db.url", dbUrl)
+    systemProperty("aimemory.db.user", dbUser)
+    systemProperty("aimemory.db.password", dbPassword)
+    systemProperty("keycloak.admin.user", keycloakUser)
+    systemProperty("keycloak.admin.password", keycloakPassword)
 }
