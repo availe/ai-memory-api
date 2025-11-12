@@ -30,7 +30,12 @@ Note that all the commands below are meant to be executed from the project root.
   -Pdevelopment
 ```
 
+Note this command will not self-terminate, as the server runs until manually cancelled. It will get stuck at 94%, that
+just means the server is working.
+
 6) To start project frontend, you can run `pnpm --filter ./client dev`
+
+**Project Teardown Steps:**
 
 The following command will delete the Postgres container and its volumes. However, the command does not delete the
 Postgres image from your computer.
