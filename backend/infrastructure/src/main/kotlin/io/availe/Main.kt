@@ -3,14 +3,9 @@ package io.availe
 import com.github.dockerjava.api.DockerClient
 import io.availe.orchestration.containers.ContainerOrchestrator
 import io.availe.orchestration.containers.core.*
-import io.availe.orchestration.keycloak.keycloakRunSpec
-import io.availe.orchestration.keycloak.loadKeycloakConfig
 import io.availe.orchestration.postgres.loadPostgresConfig
 import io.availe.orchestration.postgres.postgresRunSpec
 import io.availe.provisioning.PostgresProvisioner
-import io.availe.provisioning.keycloak.KeycloakProvisioner
-import io.availe.provisioning.keycloak.reconcilers.ClientsReconciler
-import io.availe.provisioning.keycloak.reconcilers.RealmSettingsReconciler
 import org.slf4j.LoggerFactory
 import kotlin.system.exitProcess
 
@@ -34,29 +29,15 @@ internal fun main(args: Array<String>) {
         )
 
         val pgConfig = loadPostgresConfig()
-        val kcConfig = loadKeycloakConfig()
-
         val postgresSpec = postgresRunSpec()
-        val keycloakSpec = keycloakRunSpec()
-
         val postgresProvisioner = PostgresProvisioner(pgConfig)
-
-        val realmSettingsReconciler = RealmSettingsReconciler()
-        val clientsReconciler = ClientsReconciler()
-        val keycloakProvisioner = KeycloakProvisioner(
-            kcConfig,
-            realmSettingsReconciler,
-            clientsReconciler
-        )
 
         val manager = InfrastructureManager(
             logger,
             containerOrchestrator,
             postgresProvisioner,
-            keycloakProvisioner,
             pgConfig,
             postgresSpec,
-            keycloakSpec
         )
 
         if ("--destroyAll" in args) {

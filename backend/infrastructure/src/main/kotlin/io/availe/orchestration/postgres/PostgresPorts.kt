@@ -4,7 +4,7 @@ import io.availe.orchestration.containers.domain.ContainerRunSpecification
 
 internal sealed interface PostgresPorts : ContainerRunSpecification.PortMapping {
     data object Postgres : PostgresPorts {
-        override val hostPortNumber = 5432
+        override val hostPortNumber = 5433
         override val containerPortNumber = 5432
     }
 }

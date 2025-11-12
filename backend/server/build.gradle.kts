@@ -21,11 +21,9 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
-val dbUrl = providers.gradleProperty("aimemory.db.url")
-val dbUser = providers.gradleProperty("aimemory.db.user")
-val dbPassword = providers.gradleProperty("aimemory.db.password")
-val keycloakUser = providers.gradleProperty("keycloak.admin.user")
-val keycloakPassword = providers.gradleProperty("keycloak.admin.password")
+val dbUrl = providers.gradleProperty("db.url")
+val dbUser = providers.gradleProperty("db.user")
+val dbPassword = providers.gradleProperty("db.password")
 
 group = "io.availe"
 version = "1.0-SNAPSHOT"
@@ -115,9 +113,7 @@ tasks.test {
 }
 
 tasks.named<JavaExec>("run") {
-    systemProperty("aimemory.db.url", dbUrl)
-    systemProperty("aimemory.db.user", dbUser)
-    systemProperty("aimemory.db.password", dbPassword)
-    systemProperty("keycloak.admin.user", keycloakUser)
-    systemProperty("keycloak.admin.password", keycloakPassword)
+    systemProperty("db.url", providers.gradleProperty("db.url").get())
+    systemProperty("db.user", providers.gradleProperty("db.user").get())
+    systemProperty("db.password", providers.gradleProperty("db.password").get())
 }

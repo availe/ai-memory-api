@@ -5,7 +5,6 @@ ktor = "3.3.2"
 kotlinxSerialization = "1.9.0"
 xemanticMdc = "0.1.1"
 dockerJavaBom = "3.6.0"
-keycloakAdminClient = "26.0.7"
 postgresql = "42.7.8"
 logback = "1.5.20"
 gradle-buildconfig = "5.7.1"
@@ -31,7 +30,6 @@ xemantic-ai-tool-schema-mdc = { module = "com.xemantic.ai:xemantic-ai-tool-schem
 docker-java = { module = "com.github.docker-java:docker-java" }
 docker-java-bom = { module = "com.github.docker-java:docker-java-bom", version.ref = "dockerJavaBom" }
 docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5" }
-keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloakAdminClient" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 flyway-database-postgresql = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flyway" }

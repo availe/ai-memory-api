@@ -4,7 +4,7 @@ import io.availe.orchestration.containers.domain.ContainerRunSpecification
 
 internal sealed interface PostgresVolumes : ContainerRunSpecification.VolumeMount {
     data object Data : PostgresVolumes {
-        override val volumeName = "availe-postgres-data"
+        override val volumeName = "ai-memory-api-postgres-data"
         override val containerPath = "/var/lib/postgresql"
     }
 }
