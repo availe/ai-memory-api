@@ -31,7 +31,7 @@ Note that all the commands below are meant to be executed from the project root.
 ```
 
 Note this command will not self-terminate, as the server runs until manually cancelled. It will get stuck at 94%, that
-just means the server is working.
+just means the server is working. For the next step, leave this terminal tab open (as to keep it running), and open a new terminal tab to start the frontend part of the app.
 
 6) To start project frontend, you can run:
 ```
