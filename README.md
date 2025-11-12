@@ -1,8 +1,11 @@
 Steps to Run:
 
 1) Install and setup Podman Desktop
-2) Install Ollama and run `ollama pull nomic-embed-text`
-3) Open project.
+2) Install a JDK and ensure it's available on the system's PATH.
+
+On Mac, the easiest way to install a JDK is via Homebrew. After Homebrew is set up, you can do `brew install --cask temurin@25` which will automatically add it to your PATH.
+4) Install Ollama and run `ollama pull nomic-embed-text`
+5) Open project.
 
 The project is meant to be consumed with a user-level `gradle.properties` files to set up environment variables.
 However, since you're unlikely to have this pre-prepared, instead, we can use CLI arguments (which is more verbose, but
