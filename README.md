@@ -4,6 +4,7 @@ Steps to Run:
 2) Install a JDK and ensure it's available on the system's PATH.
 
 On Mac, the easiest way to install a JDK is via Homebrew. After Homebrew is set up, you can do `brew install --cask temurin@25` which will automatically add it to your PATH.
+
 4) Install Ollama and run `ollama pull nomic-embed-text`
 5) Open project.
 
