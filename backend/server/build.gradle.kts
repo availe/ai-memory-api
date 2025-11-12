@@ -59,37 +59,41 @@ dependencies {
 }
 
 jooq {
-    configuration {
-        jdbc {
-            driver = "org.postgresql.Driver"
-            url = dbUrl.get()
-            user = dbUser.get()
-            password = dbPassword.get()
-        }
-        generator {
-            name = "org.jooq.codegen.KotlinGenerator"
-            database {
-                name = "org.jooq.meta.postgres.PostgresDatabase"
-                inputSchema = "ai_memory_api"
-                excludes = "flyway_schema_history"
+    if (dbUrl.isPresent && dbUser.isPresent && dbPassword.isPresent) {
+        configuration {
+            jdbc {
+                driver = "org.postgresql.Driver"
+                url = dbUrl.get()
+                user = dbUser.get()
+                password = dbPassword.get()
             }
-            target {
-                packageName = "io.availe.db.jooq"
-            }
-            generate {
-                isImplicitJoinPathsToOne = false
-                isImplicitJoinPathsToMany = false
+            generator {
+                name = "org.jooq.codegen.KotlinGenerator"
+                database {
+                    name = "org.jooq.meta.postgres.PostgresDatabase"
+                    inputSchema = "ai_memory_api"
+                    excludes = "flyway_schema_history"
+                }
+                target {
+                    packageName = "io.availe.db.jooq"
+                }
+                generate {
+                    isImplicitJoinPathsToOne = false
+                    isImplicitJoinPathsToMany = false
+                }
             }
         }
     }
 }
 
 flyway {
-    url = dbUrl.get()
-    user = dbUser.get()
-    password = dbPassword.get()
-    schemas = arrayOf("ai_memory_api")
-    createSchemas = true
+    if (dbUrl.isPresent && dbUser.isPresent && dbPassword.isPresent) {
+        url = dbUrl.get()
+        user = dbUser.get()
+        password = dbPassword.get()
+        schemas = arrayOf("ai_memory_api")
+        createSchemas = true
+    }
 }
 
 tasks.compileKotlin {
