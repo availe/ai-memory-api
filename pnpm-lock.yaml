@@ -1,0 +1,12 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+overrides:
+  vite: npm:rolldown-vite@7.1.14
+
+importers:
+
+  .: {}
