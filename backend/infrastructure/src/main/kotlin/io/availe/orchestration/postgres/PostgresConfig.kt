@@ -16,7 +16,7 @@ internal data class PostgresConfig(
 
 internal fun loadPostgresConfig(): PostgresConfig {
     val props = loadGradleProperties()
-    val dbName = "ai_memory_api_db"
+    val dbName = "ai_memory_api"
 
     val dbUrl = props.getProperty("db.url") ?: error("No db.url found in gradle.properties")
     val dbUser = props.getProperty("db.user") ?: error("No db.user found in gradle.properties")
